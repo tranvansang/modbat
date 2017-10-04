@@ -28,7 +28,7 @@ class SimpleListModel extends Model {
   }
 
   def size {
-    assert (collection.size == n)
+    assert (collection.size == n, "Predicted size: " + n + ", actual size: " + collection.size)
   }
 
   "main" -> "main" := add
