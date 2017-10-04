@@ -1,0 +1,6 @@
+lib/doc
+*.err
+*.class
+*.swp
+*.dot
+*.log
