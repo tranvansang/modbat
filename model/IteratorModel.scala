@@ -11,7 +11,7 @@ class IteratorModel(val dataModel: CollectionModel,
 
   def valid = (version == dataModel.version)
 
-  def actualSize = dataModel.testData.size
+  def actualSize = dataModel.collection.size
 
   def hasNext {
     if (valid) {
