@@ -1,7 +1,6 @@
 package model
 
 import java.util.LinkedList
-import java.util.Iterator
 import modbat.dsl._
 
 class SimpleListModel extends Model {
