@@ -73,3 +73,87 @@ Each failed test also produces a trace file, e. g., 89a677f51847fa26.err.
 	[WARNING] model/simple/SimpleListModel.scala:36: size
 
 Sequence leading to failure: add(1), check size, remove(4), check size.
+
+## Complex model: Java collections and iterators ##
+
+* A _collection_ holds a number of data items.
+* An _iterator_ can access these data items sequentially.
+* An iterator is _valid_ as long as the underlying collection has not been modified.
+* _hasNext_ queries if an iterator has more elements available.
+* If an iterator goes beyond the last element, NoSuchElementException is thrown.
+* If the collection has been modified, ConcurrentModificationException is thrown.
+
+### How to orchestrate multiple models ###
+
+	abstract class CollectionModel extends Model {
+	  val collection: Collection[Integer] // the "system under test" 
+	  def iterator {
+	    val it = collection.iterator()
+	    val modelIt = new IteratorModel(this, it)
+	    launch(modelIt)	
+	  }
+
+* _launch_ activates a new model instance.
+* In this example, the instance is initialized with a reference to the current model and the iterator.
+
+### Iterator model ###
+
+	class IteratorModel(val dataModel: CollectionModel,
+	                    val it: Iterator[Integer]) extends Model {
+	
+	  var pos = 0
+	  val version = dataModel.version
+	  	
+	  def valid = (version == dataModel.version)
+	
+	  def actualSize = dataModel.collection.size
+	
+	  def hasNext {
+	    if (valid) {
+	      assert ((pos < actualSize) == it.hasNext)
+	    } else {
+	      it.hasNext
+	    } 
+	  }
+	
+	  def next {
+	    require (valid)
+	    require (pos < actualSize)
+	    it.next 
+	    pos += 1 
+	  }
+
+	  def failingNext { // throws NoSuchElementException
+	    require (valid)
+	    require (pos >= actualSize)
+	    it.next
+	  } 
+	
+	  def concNext { // throws ConcurrentModificationException
+	    require(!valid)
+	    it.next
+	  }
+	
+	  "main" -> "main" := hasNext 
+	  "main" -> "main" := next
+	  "main" -> "main" := failingNext throws "NoSuchElementException"
+	  "main" -> "main" := concNext throws "ConcurrentModificationException"
+	}
+
+* Preconditions determine when a given transition function is enabled.
+
+* In this case, the preconditions distinguish normal behavior from exceptions.
+
+### Test case generation with the example model ###
+
+	[INFO] 1000 tests executed, 997 ok, 3 failed.
+	[INFO] 2 types of test failures:
+	[INFO] 1) java.util.ConcurrentModificationException at failingNext:
+	[INFO]    6e8ddf360994ae26 36ae40ee3f8301d6
+	[INFO] 2) java.util.ConcurrentModificationException at next:
+	[INFO]    6929277733240995
+
+* Interpretation: ConcurrentModificationException is thrown by Java's iterator, but model does not expect it.
+* Only 3 out of 1000 tests fail; only particular combinations of actions.
+* Can you see a pattern and find the flaw in the model?
+* Hint: You need to consider both the base model (CollectionModel) and the iterator model.
