@@ -6,7 +6,7 @@ import modbat.dsl._
 class SimpleListModel extends Model {
   val N = 10 // range of integers to choose from
   val collection = new LinkedList[Integer] // the "system under test"
-  var n = 0 //Number of element in the collection
+  var n = 0 // Number of elements in the collection
 
   def add {
     val element = new Integer(choose(0, N))
@@ -27,7 +27,9 @@ class SimpleListModel extends Model {
   }
 
   def size {
-    assert (collection.size == n, "Predicted size: " + n + ", actual size: " + collection.size)
+    assert (collection.size == n,
+	    "Predicted size: " + n +
+	    ", actual size: " + collection.size)
   }
 
   "main" -> "main" := add
