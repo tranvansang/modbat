@@ -8,7 +8,7 @@ abstract class CollectionModel extends Model {
   val N = 10 // range of integers to choose from
   val collection: Collection[Integer] // the "system under test"
   var version = 0 // how many modifications were made on the collection
-  var n = 0 //Number of element in the collection
+  var n = 0 // Number of elements in the collection
 
   def invalidateIt { // invalidate all active iterators
     version += 1
@@ -43,7 +43,9 @@ abstract class CollectionModel extends Model {
   }
 
   def size {
-    assert (collection.size == n, "Predicted size: " + n + ", actual size: " + collection.size)
+    assert (collection.size == n,
+	    "Predicted size: " + n +
+	    ", actual size: " + collection.size)
   }
 
   "main" -> "main" := add
