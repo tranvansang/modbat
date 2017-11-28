@@ -1,4 +1,4 @@
-package model
+package model.simple
 
 import java.util.LinkedList
 import modbat.dsl._

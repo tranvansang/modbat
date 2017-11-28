@@ -1,3 +1,3 @@
 #!/bin/sh
-scalac -classpath lib/experiment.jar:openmodbat-3.1-dev.jar \
-	model/*.scala
+scalac -classpath lib/experiment.jar:openmodbat-3.2.jar \
+	model/*/*.scala

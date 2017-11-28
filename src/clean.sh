@@ -1,2 +1,2 @@
 #!/bin/sh
-rm -f */*.class
+rm -f */*/*.class
