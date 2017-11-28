@@ -34,7 +34,7 @@ class IteratorModel(val dataModel: CollectionModel,
     it.next
   }
 
-  def concNext {
+  def concNext { // throws ConcurrentModificationException
     require(!valid)
     it.next
   }
