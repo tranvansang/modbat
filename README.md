@@ -124,60 +124,64 @@ Sequence leading to failure: add(1), check size, remove(4), check size.
 
 ### How to orchestrate multiple models ###
 
-	abstract class CollectionModel extends Model {
-	  val collection: Collection[Integer] // the "system under test" 
-	  def iterator {
-	    val it = collection.iterator()
-	    val modelIt = new IteratorModel(this, it)
-	    launch(modelIt)	
-	  }
+```scala
+abstract class CollectionModel extends Model {
+  val collection: Collection[Integer] // the "system under test" 
+  def iterator {
+    val it = collection.iterator()
+    val modelIt = new IteratorModel(this, it)
+    launch(modelIt)	
+  }
+```
 
 * _launch_ activates a new model instance.
 * In this example, the instance is initialized with a reference to the current model and the iterator.
 
 ### Iterator model ###
 
-	class IteratorModel(val dataModel: CollectionModel,
-	                    val it: Iterator[Integer]) extends Model {
-	
-	  var pos = 0
-	  val version = dataModel.version
-	  	
-	  def valid = (version == dataModel.version)
-	
-	  def actualSize = dataModel.collection.size
-	
-	  def hasNext {
-	    if (valid) {
-	      assert ((pos < actualSize) == it.hasNext)
-	    } else {
-	      it.hasNext
-	    } 
-	  }
-	
-	  def next {
-	    require (valid)
-	    require (pos < actualSize)
-	    it.next 
-	    pos += 1 
-	  }
+```scala
+class IteratorModel(val dataModel: CollectionModel,
+                    val it: Iterator[Integer]) extends Model {
 
-	  def failingNext { // throws NoSuchElementException
-	    require (valid)
-	    require (pos >= actualSize)
-	    it.next
-	  } 
-	
-	  def concNext { // throws ConcurrentModificationException
-	    require(!valid)
-	    it.next
-	  }
-	
-	  "main" -> "main" := hasNext 
-	  "main" -> "main" := next
-	  "main" -> "main" := failingNext throws "NoSuchElementException"
-	  "main" -> "main" := concNext throws "ConcurrentModificationException"
-	}
+  var pos = 0
+  val version = dataModel.version
+  	
+  def valid = (version == dataModel.version)
+
+  def actualSize = dataModel.collection.size
+
+  def hasNext {
+    if (valid) {
+      assert ((pos < actualSize) == it.hasNext)
+    } else {
+      it.hasNext
+    } 
+  }
+
+  def next {
+    require (valid)
+    require (pos < actualSize)
+    it.next 
+    pos += 1 
+  }
+
+  def failingNext { // throws NoSuchElementException
+    require (valid)
+    require (pos >= actualSize)
+    it.next
+  } 
+
+  def concNext { // throws ConcurrentModificationException
+    require(!valid)
+    it.next
+  }
+
+  "main" -> "main" := hasNext 
+  "main" -> "main" := next
+  "main" -> "main" := failingNext throws "NoSuchElementException"
+  "main" -> "main" := concNext throws "ConcurrentModificationException"
+}
+```
 
 * Preconditions determine when a given transition function is enabled.
 
