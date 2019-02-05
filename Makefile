@@ -1,20 +1,42 @@
-compile:
+#scala version 2.11.12
+MOD_BAT=openmodbat-3.3.jar
+.PHONY: build clean run-simple run-complex show-trace
+build:
 	mkdir -p build
-	scalac -classpath experiment.jar:lib/openmodbat-3.2.jar -sourcepath src -deprecation -verbose -d build src/model/*/*.scala
+	scalac \
+		-classpath lib/${MOD_BAT} \
+		-sourcepath src \
+		-deprecation \
+		-verbose \
+		-d build \
+		-g:vars \
+		src/model/*/*.scala
 clean:
-	rm -f build
+	rm -rf build
 run-simple:
-	time scala -classpath build lib/openmodbat-3.2.jar \
+	time \
+		scala \
+		-classpath build lib/${MOD_BAT} \
 		-s=10 \
 		-n=5 \
 		--abort-probability=0.02 \
 		model.simple.SimpleListModel
 run-complex:
-	time scala -classpath . openmodbat-3.2.jar \
+	time \
+		scala \
+		-classpath build lib/${MOD_BAT} \
 		-s=5 \
 		-n=1000 \
 		--abort-probability=0.02 \
 		model.complex.LinkedListModel
+run-counter:
+	time \
+		scala \
+		-classpath build lib/${MOD_BAT} \
+		-s=5 \
+		-n=1000 \
+		--abort-probability=0.02 \
+		model.counter.Test
 #example: make show-trace FILE=<file name>
 show-trace:
 	if [ "`echo ${FILE} | grep .err`" = "" ]
