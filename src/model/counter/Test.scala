@@ -19,7 +19,8 @@ class Test extends Model {
   } label "inc"
   "init" -> "init" := {
     counter.dec
-    model -= 1
+    if (model > 0) model -= 1
+    //model -= 1
   } label "dec"
   "init" -> "init" := {
     counter.reset
