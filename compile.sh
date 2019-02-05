@@ -1,2 +1,2 @@
 #!/bin/sh
-scalac -classpath lib/experiment.jar:openmodbat-3.2.jar src/model/*/*.scala
+scalac -classpath experiment.jar:lib/openmodbat-3.2.jar -sourcepath src -deprecation src/model/*/*.scala
