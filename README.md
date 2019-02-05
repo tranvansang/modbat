@@ -20,5 +20,5 @@ Scala compiler version 2.11.12 -- Copyright 2002-2017, LAMP/EPFL
 
 - Build: `make`
 - Run: `make run-counter`, `make run-simple` or `make run-complex`
-- Trace error: `make show-trace <err FILE no>`
+- Trace error: `make show-trace FILE=<err FILE no>`
 - Clean: `make clean`
