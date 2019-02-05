@@ -1,5 +1,5 @@
 #scala version 2.11.12
-MOD_BAT=openmodbat-3.3.jar
+MOD_BAT=openmodbat-3.2.jar
 .PHONY: build clean run-simple run-complex show-trace
 build:
 	mkdir -p build
@@ -12,7 +12,7 @@ build:
 		-g:vars \
 		src/model/*/*.scala
 clean:
-	rm -rf build
+	rm -rf build *.err
 run-simple:
 	time \
 		scala \
@@ -39,13 +39,13 @@ run-counter:
 		model.counter.Test
 #example: make show-trace FILE=<file name>
 show-trace:
-	if [ "`echo ${FILE} | grep .err`" = "" ]
-	then
-		FILE1="${FILE}.err"
-	else
-		FILE1="${FILE}"
-	fi
-	cat $FILE1 | \
-		sed -e 's/^\([a-z._A-Z]*Exception\)$/[91m\1[0m/' \
+	cat "${FILE}.err" | \
+		sed \
+		-e 's/^\([a-z._A-Z]*Exception\)$$/[91m\1[0m/' \
 		-e 's/^\(.WARNING.\|.ERROR.\)/[31m\1[0m/' \
-		-e 's/\([a-z/._A-Z:0-9]*\): *\([^:]*\): \(.*\)$/[40m[93m\1[0m:\2: [40m[97m\3[0m/'
+		-e 's/\([a-z/._A-Z:0-9]*\): *\([^:]*\): \(.*\)$$/[40m[93m\1[0m:\2: [40m[97m\3[0m/'
+	#if [ "`echo ${FILE} | grep .err`" = "" ]; then
+		#FILE1="${FILE}.err"
+	#else
+		#FILE1="${FILE}"
+	#fi
